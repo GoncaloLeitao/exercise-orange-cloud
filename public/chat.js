@@ -9,7 +9,7 @@ const SUGGESTIONS = [
   "What's still open?",
   "Task the request you just raised and get it moving",
   "It's arrived. Mark it delivered",
-  "DP DELTA needs every generator we have",
+  "Send DP DELTA all our fuel",
   "What's closest to its reserve? Resupply it with 10 pallets"
 ];
 

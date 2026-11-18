@@ -146,7 +146,7 @@ Every description starts with `${cell.label}`, which reads like "Air cell KESTRE
 
 ### Your loop for each tool
 
-1. Uncomment the block and write the handler.
+1. Uncomment the block and write the handler. Until the handler returns something, your editor shows a long "No overload matches this call" error on `registerTool`. It goes away once the handler returns `asText(...)`.
 2. Deploy with `npm run deploy` (or commit and push if you used the Deploy button).
 3. Cloudflare OS picks up new tools within about 5 minutes. If one still isn't there, start a new chat. In AI Playground, open **Custom MCP → Tools** and select **Refresh**.
 4. Ask for something that needs the tool and watch your board.
@@ -303,7 +303,7 @@ Deploy, then reload `/chat`. The pill at the top should say **On the net: 1 MCP 
 
 Under each reply you'll see the tools the watchkeeper called. Select one to see its input and output. On the board its requests are labelled **AGENT**, and **Watchkeeper on shift**, **The watchkeeper raises a request** and **Delivered** tick as it works.
 
-Then ask it for something that dips into a reserve and watch what it says. It should tell you the request is held and that it can't release it. If you haven't ticked **Sunray's say-so** yet, release it on the board now.
+Then ask for something that dips into a reserve: *Send DP DELTA all our fuel.* It should raise one request, tell you it's held and say it can't release it. If you haven't ticked **Sunray's say-so** yet, release it on the board now.
 
 ### Make it your own
 
@@ -348,7 +348,7 @@ Deploy, then select **New conversation** on `/chat`. The pill should say **On th
 You need a request your cell can't deliver. EXCON will send injects for this. To make your own, open **Run your own injects** on your board:
 
 - **Land cell:** select **Bridge out**, note which road it cut, then ask the watchkeeper: *DP ECHO needs 8 pallets of water and 2 of medical supplies* (use the site that was cut).
-- **Air cell:** select **Weather** to suspend flying, then ask: *DP BRAVO needs 4 pallets of sandbags.* Or ask for a load too big for a sortie: *DP BRAVO needs 12 pallets of sandbags.*
+- **Air cell:** select **Weather** to suspend flying, then ask: *DP BRAVO needs 4 pallets of sandbags.* Or ask for more than your whole store: *DP BRAVO needs 20 pallets of sandbags.*
 
 Watch the tool chips. The purple ones are calls to your partner's MCP server. A good watchkeeper reads your SITREP, sees the problem, reads your partner's SITREP, and raises the request there, split into loads your partner can carry. Their board shows the new tickets labelled **JOINT** with your callsign. **Link established** and **Joint tasking** tick on both boards.
 

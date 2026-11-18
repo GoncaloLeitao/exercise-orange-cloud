@@ -177,6 +177,17 @@ export class OpsRoom extends DurableObject<Env> {
     return rowToRequest(row);
   }
 
+  /** Pallets each store owes to requests that are still held. */
+  private heldClaims(): Map<string, number> {
+    const claims = new Map<string, number>();
+    for (const row of this.sql.exec("SELECT items FROM requests WHERE status = 'held'")) {
+      for (const line of JSON.parse(String(row.items)) as RequestLine[]) {
+        claims.set(line.storeId, (claims.get(line.storeId) ?? 0) + line.qty);
+      }
+    }
+    return claims;
+  }
+
   /** Raise a request for support. Stock is committed straight away, unless the request is held. */
   raiseRequest(input: RaiseRequestInput, caller: Caller): SupportRequest {
     return this.createRequest(input, caller, false);
@@ -213,18 +224,23 @@ export class OpsRoom extends DurableObject<Env> {
     }
     // Requests from exercise control arrive whatever the conditions. That's the point of them.
     if (!fromExcon) this.assertCanMove(site, who.role);
+    // Held requests haven't taken their stock yet, but it's spoken for until the Duty Officer decides.
+    const claimed = this.heldClaims();
     for (const { store, qty } of wanted.values()) {
-      if (store.stock < qty) {
+      const onHold = claimed.get(store.id) ?? 0;
+      const free = store.stock - onHold;
+      if (free < qty) {
+        const held = onHold ? ` (${pallets(onHold)} more are claimed by held requests)` : "";
         throw new OpsError(
-          store.stock === 0
-            ? `There is no ${store.name} left. Resupply it first or send something else.`
-            : `Only ${pallets(store.stock)} of ${store.name} on hand, but the request asks for ${qty}. Resupply first or send less.`
+          free <= 0
+            ? `There is no ${store.name} free${held}. Resupply it first, send something else, or hand it to another cell.`
+            : `Only ${pallets(free)} of ${store.name} free${held}, but the request asks for ${qty}. Resupply first, send less, or hand it to another cell.`
         );
       }
     }
 
     // A request that would take a store below its reserve is held for a human to decide.
-    const dips = [...wanted.values()].filter(({ store, qty }) => store.stock - qty < store.reserve);
+    const dips = [...wanted.values()].filter(({ store, qty }) => store.stock - (claimed.get(store.id) ?? 0) - qty < store.reserve);
     const held = !fromExcon && dips.length > 0;
     const heldReason = held ? `Takes ${dips.map((d) => d.store.name.toLowerCase()).join(" and ")} below reserve` : null;
 
