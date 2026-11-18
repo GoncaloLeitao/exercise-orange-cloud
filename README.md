@@ -1,6 +1,6 @@
 # Exercise ORANGE CLOUD
 
-Hackathon starter for a two-hour hands-on session at Cloudflare London, 18 November 2026.
+Hackathon starter for a two-hour Hackathon.
 
 A storm has hit the island of Halcyon, and eight distribution points need water, shelter and medical stores. You run an ops room for the relief effort, on a single Cloudflare Worker. It already has a REST API, a live ops board and a database. This afternoon you give it an MCP server, put an AI watchkeeper on shift to run it, then link up with another cell so your two agents can hand work to each other.
 
