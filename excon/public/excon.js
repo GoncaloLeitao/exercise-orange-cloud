@@ -143,7 +143,8 @@ function buildInject(el) {
 
 document.addEventListener("click", async (event) => {
   const el = event.target.closest("button");
-  if (!el || el.type === "submit") return;
+  // The PIN form's own button is handled by its submit listener below.
+  if (!el || el.closest("#pin-form")) return;
   try {
     if (el.dataset.inject) {
       if (!unlocked) throw new Error("Enter the PIN first.");
